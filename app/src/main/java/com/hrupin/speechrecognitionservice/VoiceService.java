@@ -104,8 +104,8 @@ public class VoiceService extends Service implements
             return;
 
         String text = hypothesis.getHypstr();
-        if (text.equals(KEYPHRASE))
-            switchSearch(KEYPHRASE);
+        if (text.contains(KEYPHRASE))
+            switchSearch(KWS_SEARCH);
 
         Log.i(LOG_TAG, "onPartialResult text=" +text);
     }
@@ -132,21 +132,17 @@ public class VoiceService extends Service implements
      */
     @Override
     public void onEndOfSpeech() {
-        if (!recognizer.getSearchName().equals(KWS_SEARCH))
+        if (!recognizer.getSearchName().contains(KWS_SEARCH))
             switchSearch(KWS_SEARCH);
         Log.i(LOG_TAG, "onEndOfSpeech");
     }
 
     private void switchSearch(String searchName) {
+        Log.i(LOG_TAG, "switchSearch searchName = " + searchName);
         recognizer.stop();
 
         // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
-        if (searchName.equals(KWS_SEARCH))
-            recognizer.startListening(searchName);
-        else
-            recognizer.startListening(searchName, 10000);
-
-        Log.i(LOG_TAG, "switchSearch searchName = " + searchName);
+        recognizer.startListening(searchName, 10000);
     }
 
     private void setupRecognizer(File assetsDir) throws IOException {
@@ -155,7 +151,7 @@ public class VoiceService extends Service implements
 
         recognizer = SpeechRecognizerSetup.defaultSetup()
                 .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "easygriddict-en-us.dict"))
+                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
 
                 .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
                 .setKeywordThreshold(1e-45f) // Threshold to tune for keyphrase to balance between false alarms and misses
