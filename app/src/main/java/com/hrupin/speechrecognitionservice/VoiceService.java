@@ -11,7 +11,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class VoiceService extends Service implements
     private static final String KWS_SEARCH = "wakeup";
 
     /* Keyword we are looking for to activate menu */
-    private static final String KEYPHRASE = "sphinx";
+    private static final String KEYPHRASE = "ok sphinx";
 
     private SpeechRecognizer recognizer;
 
@@ -104,8 +106,10 @@ public class VoiceService extends Service implements
             return;
 
         String text = hypothesis.getHypstr();
-        if (text.contains(KEYPHRASE))
+        if (text.contains(KEYPHRASE)) {
+            Toast.makeText(this, "onPartialResult text=" + text, Toast.LENGTH_SHORT).show();
             switchSearch(KWS_SEARCH);
+        }
 
         Log.i(LOG_TAG, "onPartialResult text=" +text);
     }
